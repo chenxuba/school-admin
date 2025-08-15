@@ -69,6 +69,11 @@
                   <div v-if="item.isRecommend" class="recommend-badge">
                     推荐
                   </div>
+                  <!-- 单点不送标记 - 左上角 -->
+                  <div v-if="item.noSingleDelivery" class="no-delivery-badge">
+                    <span>🚫</span>
+                    单点不送
+                  </div>
                 </div>
               </template>
               
@@ -81,21 +86,42 @@
                 
                 <template #description>
                   <div class="goods-info">
-                    <div class="price-section">
+                    <div class="flex justify-between items-center">
+                      <div class="price-section">
                       <span class="current-price">¥{{ item.price }}</span>
                       <span v-if="item.originalPrice > item.price" class="original-price">
                         ¥{{ item.originalPrice }}
                       </span>
+                    </div>
+
+                     <!-- 规格标识 -->
+                   <div class="spec-indicator">
+                     <a-tag 
+                       :color="item.specifications && item.specifications.length > 0 ? 'orange' : 'default'"
+                       class="spec-tag"
+                     >
+                       <template #icon>
+                         <span class="spec-icon">
+                           {{ item.specifications && item.specifications.length > 0 ? '📋' : '📄' }}
+                         </span>
+                       </template>
+                       {{ item.specifications && item.specifications.length > 0 ? '多规格' : '无规格' }}
+                       <span v-if="item.specifications && item.specifications.length > 0" class="spec-count">
+                         ({{ item.specifications.length }}种)
+                       </span>
+                     </a-tag>
+                   </div>
                     </div>
                     
                     <div class="stock-sales">
                       <span class="stock">库存: {{ item.stock }}</span>
                       <span class="sales">销量: {{ item.sales }}</span>
                     </div>
-                   <div class="flex justify-between items-center mb-12px">
+                   <div class="flex justify-between items-center mb-8px">
                     <div class="category">
                       <a-tag color="blue">{{ item.menuName }}</a-tag>
                     </div>
+                   
                     
                     <div class="status">
                       <a-tag :color="item.status === 1 ? 'green' : 'red'" class="m-0">
@@ -103,9 +129,22 @@
                       </a-tag>
                     </div>
                    </div>
+
+
+
+                   
                     
                     <div class="description" :title="item.description">
                       {{ item.description }}
+                    </div>
+                    
+                    <div class="action-buttons">
+                      <a-button type="primary" size="small" @click="editGoods(item)">
+                        编辑
+                      </a-button>
+                      <a-button type="primary" danger size="small" @click="deleteGoods(item)" class="ml-2">
+                        删除
+                      </a-button>
                     </div>
                   </div>
                 </template>
@@ -140,8 +179,8 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
-import { getGoodsList, getGoodsMenuList, type GoodsItem, type Pagination, type GoodsMenu } from '~/api/goods'
+import { message, Modal } from 'ant-design-vue'
+import { getGoodsList, getGoodsMenuList, deleteGoods as deleteGoodsApi, type GoodsItem, type Pagination, type GoodsMenu } from '~/api/goods'
 
 const router = useRouter()
 
@@ -255,6 +294,32 @@ const goToAddGoods = () => {
   router.push('/goods/add')
 }
 
+// 编辑商品
+const editGoods = (item: GoodsItem) => {
+  router.push(`/goods/edit/${item._id}`)
+}
+
+// 删除商品
+const deleteGoods = (item: GoodsItem) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除商品"${item.name}"吗？此操作不可恢复。`,
+    okText: '确认删除',
+    okType: 'danger',
+    cancelText: '取消',
+    async onOk() {
+      try {
+        await deleteGoodsApi(item._id)
+        message.success(`商品"${item.name}"删除成功`)
+        fetchGoodsList() // 重新加载列表
+      } catch (error) {
+        message.error('删除商品失败，请稍后重试')
+        console.error('删除商品失败:', error)
+      }
+    }
+  })
+}
+
 // 图片加载错误处理
 const handleImageError = (e: Event) => {
   const target = e.target as HTMLImageElement
@@ -330,6 +395,25 @@ onMounted(() => {
         font-size: 12px;
         font-weight: 500;
       }
+
+      .no-delivery-badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: #2c2314;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        
+        span {
+          font-size: 10px;
+        }
+      }
     }
 
     .goods-title {
@@ -376,9 +460,36 @@ onMounted(() => {
         }
       }
 
+      .spec-indicator {
+        display: flex;
+        align-items: center;
+
+        .spec-tag {
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          border-radius: 4px;
+          margin: 0;
+
+          .spec-icon {
+            margin-right: 2px;
+            font-size: 12px;
+          }
+
+          .spec-count {
+            margin-left: 2px;
+            font-size: 11px;
+            opacity: 0.8;
+          }
+        }
+      }
+
+
+
      
       .description {
         font-size: 12px;
+        height: 30px;
         color: #999;
         line-height: 1.4;
         display: -webkit-box;
@@ -387,6 +498,17 @@ onMounted(() => {
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
+        margin-bottom: 12px;
+        margin-top: 10px;
+      }
+
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #f0f0f0;
       }
     }
   }

@@ -94,6 +94,11 @@
             <span class="ml-2 text-gray-500">推荐商品会在首页展示</span>
           </a-form-item>
 
+          <a-form-item label="单点不送" name="noSingleDelivery">
+            <a-switch v-model:checked="formData.noSingleDelivery" />
+            <span class="ml-2 text-gray-500">开启后该商品不支持单点配送</span>
+          </a-form-item>
+
           <a-form-item label="缩略图" name="thumbnail">
             <div class="image-upload-section">
               <a-input
@@ -229,6 +234,7 @@ const formData = reactive<CreateGoodsParams>({
   status: 1,
   menuId: undefined,
   isRecommend: false,
+  noSingleDelivery: false,
   specifications: []
 })
 
@@ -390,6 +396,7 @@ const resetForm = () => {
     status: 1,
     menuId: undefined,
     isRecommend: false,
+    noSingleDelivery: false,
     specifications: []
   })
 }

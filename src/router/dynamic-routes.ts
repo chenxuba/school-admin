@@ -23,9 +23,19 @@ export default [
       {
         path: '/goods/add',
         name: 'GoodsAdd',
-        component: () => import('~/pages/goods/add.vue'),
+        component: () => import('~/pages/goods/edit.vue'),
         meta: {
           title: '新增商品',
+        },
+      },
+      {
+        path: '/goods/edit/:id',
+        name: 'GoodsEdit',
+        component: () => import('~/pages/goods/edit.vue'),
+        meta: {
+          title: '编辑商品',
+          hideInMenu: true,
+          parentKeys: ['/goods/list'],
         },
       },
       {

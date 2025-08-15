@@ -1,4 +1,4 @@
-import { useGet, usePost } from '~/utils/request'
+import { useGet, usePost, usePut, useDelete } from '~/utils/request'
 
 // 商品规格接口类型定义
 export interface Specification {
@@ -22,6 +22,7 @@ export interface GoodsItem {
   menuId: string
   shopId: string
   specifications?: Specification[]
+  noSingleDelivery?: boolean
   createTime: string
   updateTime: string
   __v: number
@@ -77,6 +78,23 @@ export interface CreateGoodsParams {
   menuId: string | undefined
   isRecommend: boolean
   specifications?: Specification[]
+  noSingleDelivery?: boolean
+}
+
+// 更新商品参数类型
+export interface UpdateGoodsParams {
+  name: string
+  description: string
+  price: number
+  originalPrice: number
+  images: string[]
+  thumbnail: string
+  stock: number
+  status: number
+  menuId: string | undefined
+  isRecommend: boolean
+  specifications?: Specification[]
+  noSingleDelivery?: boolean
 }
 
 
@@ -109,4 +127,19 @@ export function getGoodsMenuList() {
 // 新增商品分类
 export function createGoodsMenu(data: CreateGoodsMenuParams) {
   return usePost<GoodsMenu>('/goodsmenu/add', data)
+}
+
+// 获取单个商品详情
+export function getGoodsDetail(id: string) {
+  return useGet<GoodsItem>(`/goods/${id}`)
+}
+
+// 更新商品
+export function updateGoods(id: string, data: UpdateGoodsParams) {
+  return usePut<GoodsItem>(`/goods/${id}`, data)
+}
+
+// 删除商品
+export function deleteGoods(id: string) {
+  return useDelete(`/goods/${id}`)
 }
