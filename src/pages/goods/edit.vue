@@ -48,7 +48,7 @@ const formData = reactive<CreateGoodsParams & UpdateGoodsParams>({
 })
 
 // 表单验证规则
-const rules = {
+const rules: Record<string, any> = {
   name: [
     { required: true, message: '请输入商品名称', trigger: 'blur' },
     { min: 1, max: 100, message: '商品名称长度在1到100个字符', trigger: 'blur' },

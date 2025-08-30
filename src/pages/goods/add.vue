@@ -28,7 +28,7 @@ const formData = reactive<CreateGoodsParams>({
 })
 
 // 表单验证规则
-const rules = {
+const rules: Record<string, any> = {
   name: [
     { required: true, message: '请输入商品名称', trigger: 'blur' },
     { min: 1, max: 100, message: '商品名称长度在1到100个字符', trigger: 'blur' },
@@ -157,7 +157,7 @@ async function handleSubmit() {
     const submitData: CreateGoodsParams = {
       ...formData,
       images: filteredImages,
-      specifications: filteredSpecifications.length > 0 ? filteredSpecifications : undefined,
+      specifications: filteredSpecifications.length > 0 ? filteredSpecifications : [],
     }
 
     const response = await createGoods(submitData)
@@ -374,7 +374,7 @@ onMounted(() => {
                 <div class="spec-values">
                   <div v-for="(_, valueIndex) in spec.values" :key="valueIndex" class="spec-value-item">
                     <a-input
-                      v-model:value="formData.specifications[specIndex].values[valueIndex]"
+                      v-model:value="formData.specifications![specIndex].values[valueIndex]"
                       placeholder="请输入规格值"
                       style="width: 150px; margin-right: 8px"
                     />

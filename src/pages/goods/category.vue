@@ -53,7 +53,7 @@ const columns = [
 ]
 
 // 表单验证规则
-const rules = {
+const rules: Record<string, any> = {
   name: [
     { required: true, message: '请输入分类名称', trigger: 'blur' },
     { min: 2, max: 50, message: '分类名称长度为2-50个字符', trigger: 'blur' },
@@ -101,7 +101,7 @@ function showAddModal() {
 }
 
 // 处理编辑
-function handleEdit(record: GoodsMenu) {
+function handleEdit(record: Record<string, any>) {
   isEdit.value = true
   modalVisible.value = true
 
@@ -115,7 +115,7 @@ function handleEdit(record: GoodsMenu) {
 }
 
 // 处理删除
-function handleDelete(id: string) {
+function handleDelete(_id: string) {
   // 这里可以添加删除接口调用
   message.info('删除功能待实现')
 }

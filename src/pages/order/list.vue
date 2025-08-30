@@ -167,7 +167,7 @@ function handleDateChange(dates: any) {
 }
 
 // 表格变化处理
-const handleTableChange: TableProps['onChange'] = (pagination, filters, sorter) => {
+const handleTableChange: TableProps['onChange'] = (pagination, _filters, _sorter) => {
   if (pagination) {
     searchForm.page = pagination.current || 1
     searchForm.limit = pagination.pageSize || 10

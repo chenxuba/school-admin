@@ -1,1 +1,5 @@
 node_modules
+dist
+.output
+servers/.nitro
+types/components.d.ts

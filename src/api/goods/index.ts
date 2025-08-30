@@ -75,7 +75,7 @@ export interface CreateGoodsParams {
   status: number
   menuId: string | undefined
   isRecommend: boolean
-  specifications?: Specification[]
+  specifications: Specification[]
   noSingleDelivery?: boolean
 }
 
@@ -91,7 +91,7 @@ export interface UpdateGoodsParams {
   status: number
   menuId: string | undefined
   isRecommend: boolean
-  specifications?: Specification[]
+  specifications: Specification[]
   noSingleDelivery?: boolean
 }
 
