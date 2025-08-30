@@ -1,3 +1,214 @@
+<script setup lang="ts">
+import { onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
+import type { FormInstance } from 'ant-design-vue'
+import { type CreateGoodsParams, type GoodsMenu, createGoods, getGoodsMenuList } from '~/api/goods'
+
+const router = useRouter()
+const formRef = ref<FormInstance>()
+const submitLoading = ref(false)
+const menuLoading = ref(false)
+const menuList = ref<GoodsMenu[]>([])
+
+// 表单数据
+const formData = reactive<CreateGoodsParams>({
+  name: '',
+  description: '',
+  price: 0,
+  originalPrice: 0,
+  images: [''],
+  thumbnail: '',
+  stock: 0,
+  status: 1,
+  menuId: undefined,
+  isRecommend: false,
+  noSingleDelivery: false,
+  specifications: [],
+})
+
+// 表单验证规则
+const rules = {
+  name: [
+    { required: true, message: '请输入商品名称', trigger: 'blur' },
+    { min: 1, max: 100, message: '商品名称长度在1到100个字符', trigger: 'blur' },
+  ],
+  description: [
+    { required: true, message: '请输入商品描述', trigger: 'blur' },
+    { min: 1, max: 500, message: '商品描述长度在1到500个字符', trigger: 'blur' },
+  ],
+  menuId: [
+    { required: true, message: '请选择商品分类', trigger: 'change' },
+  ],
+  price: [
+    { required: true, message: '请输入商品价格', trigger: 'blur' },
+    { type: 'number', min: 0, message: '商品价格不能小于0', trigger: 'blur' },
+  ],
+  originalPrice: [
+    { type: 'number', min: 0, message: '原价不能小于0', trigger: 'blur' },
+  ],
+  stock: [
+    { required: true, message: '请输入库存数量', trigger: 'blur' },
+    { type: 'number', min: 0, message: '库存数量不能小于0', trigger: 'blur' },
+  ],
+  thumbnail: [
+    { required: true, message: '请输入缩略图URL', trigger: 'blur' },
+    { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' },
+  ],
+  images: [
+    { required: true, message: '请至少添加一张商品图片', trigger: 'blur' },
+  ],
+}
+
+// 获取商品分类列表
+async function fetchMenuList() {
+  try {
+    menuLoading.value = true
+    const response = await getGoodsMenuList()
+
+    if (response.code === 200) {
+      menuList.value = response.data || []
+    }
+    else {
+      message.error(response.msg || '获取商品分类失败')
+    }
+  }
+  catch (error) {
+    console.error('获取商品分类失败:', error)
+    message.error('获取商品分类失败，请稍后重试')
+  }
+  finally {
+    menuLoading.value = false
+  }
+}
+
+// 添加图片输入框
+function addImage() {
+  formData.images.push('')
+}
+
+// 删除图片输入框
+function removeImage(index: number) {
+  if (formData.images.length > 1) {
+    formData.images.splice(index, 1)
+  }
+  else {
+    message.warning('至少保留一张图片')
+  }
+}
+
+// 添加规格
+function addSpecification() {
+  formData.specifications!.push({
+    name: '',
+    values: [''],
+  })
+}
+
+// 删除规格
+function removeSpecification(specIndex: number) {
+  if (formData.specifications && formData.specifications.length > 0) {
+    formData.specifications.splice(specIndex, 1)
+  }
+}
+
+// 添加规格值
+function addSpecValue(specIndex: number) {
+  if (formData.specifications && formData.specifications[specIndex]) {
+    formData.specifications[specIndex].values.push('')
+  }
+}
+
+// 删除规格值
+function removeSpecValue(specIndex: number, valueIndex: number) {
+  if (formData.specifications && formData.specifications[specIndex]) {
+    const spec = formData.specifications[specIndex]
+    if (spec.values.length > 1) {
+      spec.values.splice(valueIndex, 1)
+    }
+    else {
+      message.warning('每个规格至少保留一个值')
+    }
+  }
+}
+
+// 提交表单
+async function handleSubmit() {
+  try {
+    await formRef.value?.validate()
+
+    // 过滤空的图片URL
+    const filteredImages = formData.images.filter(img => img.trim())
+    if (filteredImages.length === 0) {
+      message.error('请至少添加一张有效的商品图片')
+      return
+    }
+
+    // 处理规格数据，过滤空值
+    const filteredSpecifications = formData.specifications
+      ?.map(spec => ({
+        name: spec.name.trim(),
+        values: spec.values.filter(value => value.trim()).map(value => value.trim()),
+      }))
+      .filter(spec => spec.name && spec.values.length > 0) || []
+
+    submitLoading.value = true
+
+    const submitData: CreateGoodsParams = {
+      ...formData,
+      images: filteredImages,
+      specifications: filteredSpecifications.length > 0 ? filteredSpecifications : undefined,
+    }
+
+    const response = await createGoods(submitData)
+
+    if (response.code === 200) {
+      message.success('商品创建成功')
+      router.push('/goods/list')
+    }
+    else {
+      message.error(response.msg || '创建商品失败')
+    }
+  }
+  catch (error) {
+    console.error('创建商品失败:', error)
+    message.error('创建商品失败，请稍后重试')
+  }
+  finally {
+    submitLoading.value = false
+  }
+}
+
+// 重置表单
+function resetForm() {
+  formRef.value?.resetFields()
+  Object.assign(formData, {
+    name: '',
+    description: '',
+    price: 0,
+    originalPrice: 0,
+    images: [''],
+    thumbnail: '',
+    stock: 0,
+    status: 1,
+    menuId: undefined,
+    isRecommend: false,
+    noSingleDelivery: false,
+    specifications: [],
+  })
+}
+
+// 返回列表
+function goBack() {
+  router.push('/goods/list')
+}
+
+// 组件挂载时获取分类列表
+onMounted(() => {
+  fetchMenuList()
+})
+</script>
+
 <template>
   <div class="add-goods-container">
     <PageContainer title="新增商品">
@@ -84,8 +295,12 @@
 
           <a-form-item label="商品状态" name="status">
             <a-radio-group v-model:value="formData.status">
-              <a-radio :value="1">上架</a-radio>
-              <a-radio :value="0">下架</a-radio>
+              <a-radio :value="1">
+                上架
+              </a-radio>
+              <a-radio :value="0">
+                下架
+              </a-radio>
             </a-radio-group>
           </a-form-item>
 
@@ -107,7 +322,7 @@
                 class="mb-2"
               />
               <div v-if="formData.thumbnail" class="image-preview">
-                <img :src="formData.thumbnail" alt="缩略图预览" class="preview-image" />
+                <img :src="formData.thumbnail" alt="缩略图预览" class="preview-image">
               </div>
             </div>
           </a-form-item>
@@ -129,10 +344,10 @@
                   删除
                 </a-button>
                 <div v-if="image" class="image-preview">
-                  <img :src="image" :alt="`商品图片${index + 1}`" class="preview-image" />
+                  <img :src="image" :alt="`商品图片${index + 1}`" class="preview-image">
                 </div>
               </div>
-              <a-button type="dashed" @click="addImage" class="add-image-btn">
+              <a-button type="dashed" class="add-image-btn" @click="addImage">
                 + 添加图片
               </a-button>
             </div>
@@ -175,14 +390,14 @@
                   <a-button
                     type="dashed"
                     size="small"
-                    @click="addSpecValue(specIndex)"
                     class="add-spec-value-btn"
+                    @click="addSpecValue(specIndex)"
                   >
                     + 添加规格值
                   </a-button>
                 </div>
               </div>
-              <a-button type="dashed" @click="addSpecification" class="add-specification-btn">
+              <a-button type="dashed" class="add-specification-btn" @click="addSpecification">
                 + 添加规格
               </a-button>
               <div class="spec-tip">
@@ -209,209 +424,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
-import type { FormInstance } from 'ant-design-vue'
-import { createGoods, getGoodsMenuList, type CreateGoodsParams, type GoodsMenu } from '~/api/goods'
-
-const router = useRouter()
-const formRef = ref<FormInstance>()
-const submitLoading = ref(false)
-const menuLoading = ref(false)
-const menuList = ref<GoodsMenu[]>([])
-
-// 表单数据
-const formData = reactive<CreateGoodsParams>({
-  name: '',
-  description: '',
-  price: 0,
-  originalPrice: 0,
-  images: [''],
-  thumbnail: '',
-  stock: 0,
-  status: 1,
-  menuId: undefined,
-  isRecommend: false,
-  noSingleDelivery: false,
-  specifications: []
-})
-
-// 表单验证规则
-const rules = {
-  name: [
-    { required: true, message: '请输入商品名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '商品名称长度在1到100个字符', trigger: 'blur' }
-  ],
-  description: [
-    { required: true, message: '请输入商品描述', trigger: 'blur' },
-    { min: 1, max: 500, message: '商品描述长度在1到500个字符', trigger: 'blur' }
-  ],
-  menuId: [
-    { required: true, message: '请选择商品分类', trigger: 'change' }
-  ],
-  price: [
-    { required: true, message: '请输入商品价格', trigger: 'blur' },
-    { type: 'number', min: 0, message: '商品价格不能小于0', trigger: 'blur' }
-  ],
-  originalPrice: [
-    { type: 'number', min: 0, message: '原价不能小于0', trigger: 'blur' }
-  ],
-  stock: [
-    { required: true, message: '请输入库存数量', trigger: 'blur' },
-    { type: 'number', min: 0, message: '库存数量不能小于0', trigger: 'blur' }
-  ],
-  thumbnail: [
-    { required: true, message: '请输入缩略图URL', trigger: 'blur' },
-    { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' }
-  ],
-  images: [
-    { required: true, message: '请至少添加一张商品图片', trigger: 'blur' }
-  ]
-}
-
-// 获取商品分类列表
-const fetchMenuList = async () => {
-  try {
-    menuLoading.value = true
-    const response = await getGoodsMenuList()
-    
-    if (response.code === 200) {
-      menuList.value = response.data || []
-    } else {
-      message.error(response.msg || '获取商品分类失败')
-    }
-  } catch (error) {
-    console.error('获取商品分类失败:', error)
-    message.error('获取商品分类失败，请稍后重试')
-  } finally {
-    menuLoading.value = false
-  }
-}
-
-// 添加图片输入框
-const addImage = () => {
-  formData.images.push('')
-}
-
-// 删除图片输入框
-const removeImage = (index: number) => {
-  if (formData.images.length > 1) {
-    formData.images.splice(index, 1)
-  } else {
-    message.warning('至少保留一张图片')
-  }
-}
-
-// 添加规格
-const addSpecification = () => {
-  formData.specifications!.push({
-    name: '',
-    values: ['']
-  })
-}
-
-// 删除规格
-const removeSpecification = (specIndex: number) => {
-  if (formData.specifications && formData.specifications.length > 0) {
-    formData.specifications.splice(specIndex, 1)
-  }
-}
-
-// 添加规格值
-const addSpecValue = (specIndex: number) => {
-  if (formData.specifications && formData.specifications[specIndex]) {
-    formData.specifications[specIndex].values.push('')
-  }
-}
-
-// 删除规格值
-const removeSpecValue = (specIndex: number, valueIndex: number) => {
-  if (formData.specifications && formData.specifications[specIndex]) {
-    const spec = formData.specifications[specIndex]
-    if (spec.values.length > 1) {
-      spec.values.splice(valueIndex, 1)
-    } else {
-      message.warning('每个规格至少保留一个值')
-    }
-  }
-}
-
-// 提交表单
-const handleSubmit = async () => {
-  try {
-    await formRef.value?.validate()
-    
-    // 过滤空的图片URL
-    const filteredImages = formData.images.filter(img => img.trim())
-    if (filteredImages.length === 0) {
-      message.error('请至少添加一张有效的商品图片')
-      return
-    }
-
-    // 处理规格数据，过滤空值
-    const filteredSpecifications = formData.specifications
-      ?.map(spec => ({
-        name: spec.name.trim(),
-        values: spec.values.filter(value => value.trim()).map(value => value.trim())
-      }))
-      .filter(spec => spec.name && spec.values.length > 0) || []
-
-    submitLoading.value = true
-    
-    const submitData: CreateGoodsParams = {
-      ...formData,
-      images: filteredImages,
-      specifications: filteredSpecifications.length > 0 ? filteredSpecifications : undefined
-    }
-    
-    const response = await createGoods(submitData)
-    
-    if (response.code === 200) {
-      message.success('商品创建成功')
-      router.push('/goods/list')
-    } else {
-      message.error(response.msg || '创建商品失败')
-    }
-  } catch (error) {
-    console.error('创建商品失败:', error)
-    message.error('创建商品失败，请稍后重试')
-  } finally {
-    submitLoading.value = false
-  }
-}
-
-// 重置表单
-const resetForm = () => {
-  formRef.value?.resetFields()
-  Object.assign(formData, {
-    name: '',
-    description: '',
-    price: 0,
-    originalPrice: 0,
-    images: [''],
-    thumbnail: '',
-    stock: 0,
-    status: 1,
-    menuId: undefined,
-    isRecommend: false,
-    noSingleDelivery: false,
-    specifications: []
-  })
-}
-
-// 返回列表
-const goBack = () => {
-  router.push('/goods/list')
-}
-
-// 组件挂载时获取分类列表
-onMounted(() => {
-  fetchMenuList()
-})
-</script>
-
 <style lang="less" scoped>
 .add-goods-container {
   .form-container {
@@ -424,7 +436,7 @@ onMounted(() => {
   .image-upload-section {
     .image-preview {
       margin-top: 8px;
-      
+
       .preview-image {
         width: 100px;
         height: 100px;
@@ -441,14 +453,14 @@ onMounted(() => {
       align-items: flex-start;
       gap: 8px;
       margin-bottom: 16px;
-      
+
       .ant-input {
         flex: 1;
       }
-      
+
       .image-preview {
         margin-top: 8px;
-        
+
         .preview-image {
           width: 80px;
           height: 80px;
@@ -458,14 +470,14 @@ onMounted(() => {
         }
       }
     }
-    
+
     .add-image-btn {
       width: 100%;
       height: 60px;
       border: 2px dashed #d9d9d9;
       background: #fafafa;
       color: #999;
-      
+
       &:hover {
         border-color: #1890ff;
         color: #1890ff;
@@ -485,7 +497,7 @@ onMounted(() => {
         display: flex;
         align-items: center;
         margin-bottom: 12px;
-        
+
         .ant-input {
           font-weight: 500;
         }
@@ -493,7 +505,7 @@ onMounted(() => {
 
       .spec-values {
         // margin-left: 16px;
-        
+
         .spec-value-item {
           display: flex;
           align-items: center;
@@ -505,7 +517,7 @@ onMounted(() => {
           background: #fff;
           color: #666;
           height: 32px;
-          
+
           &:hover {
             border-color: #1890ff;
             color: #1890ff;
@@ -521,7 +533,7 @@ onMounted(() => {
       background: #fafafa;
       color: #999;
       margin-bottom: 12px;
-      
+
       &:hover {
         border-color: #1890ff;
         color: #1890ff;

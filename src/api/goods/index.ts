@@ -1,4 +1,4 @@
-import { useGet, usePost, usePut, useDelete } from '~/utils/request'
+import { useDelete, useGet, usePost, usePut } from '~/utils/request'
 
 // 商品规格接口类型定义
 export interface Specification {
@@ -63,8 +63,6 @@ export interface CreateGoodsMenuParams {
   sort: number
 }
 
-
-
 // 新增商品参数类型
 export interface CreateGoodsParams {
   name: string
@@ -96,8 +94,6 @@ export interface UpdateGoodsParams {
   specifications?: Specification[]
   noSingleDelivery?: boolean
 }
-
-
 
 // 获取全部商品列表
 export function getAllGoods() {

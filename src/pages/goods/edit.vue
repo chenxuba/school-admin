@@ -1,3 +1,291 @@
+<script setup lang="ts">
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { message } from 'ant-design-vue'
+import type { FormInstance } from 'ant-design-vue'
+import {
+  type CreateGoodsParams,
+  type GoodsMenu,
+  type UpdateGoodsParams,
+  createGoods,
+  getGoodsDetail,
+  getGoodsMenuList,
+  updateGoods,
+} from '~/api/goods'
+
+const router = useRouter()
+const route = useRoute()
+const formRef = ref<FormInstance>()
+const submitLoading = ref(false)
+const menuLoading = ref(false)
+const pageLoading = ref(false)
+const menuList = ref<GoodsMenu[]>([])
+
+// 判断是否为编辑模式
+const isEditMode = computed(() => {
+  return route.path.includes('/edit/') && route.params.id
+})
+
+// 获取商品ID
+const goodsId = computed(() => {
+  return route.params.id as string
+})
+
+// 表单数据
+const formData = reactive<CreateGoodsParams & UpdateGoodsParams>({
+  name: '',
+  description: '',
+  price: 0,
+  originalPrice: 0,
+  images: [''],
+  thumbnail: '',
+  stock: 0,
+  status: 1,
+  menuId: undefined,
+  isRecommend: false,
+  noSingleDelivery: false,
+  specifications: [],
+})
+
+// 表单验证规则
+const rules = {
+  name: [
+    { required: true, message: '请输入商品名称', trigger: 'blur' },
+    { min: 1, max: 100, message: '商品名称长度在1到100个字符', trigger: 'blur' },
+  ],
+  description: [
+    { required: true, message: '请输入商品描述', trigger: 'blur' },
+    { min: 1, max: 500, message: '商品描述长度在1到500个字符', trigger: 'blur' },
+  ],
+  menuId: [
+    { required: true, message: '请选择商品分类', trigger: 'change' },
+  ],
+  price: [
+    { required: true, message: '请输入商品价格', trigger: 'blur' },
+    { type: 'number', min: 0, message: '商品价格不能小于0', trigger: 'blur' },
+  ],
+  originalPrice: [
+    { type: 'number', min: 0, message: '原价不能小于0', trigger: 'blur' },
+  ],
+  stock: [
+    { required: true, message: '请输入库存数量', trigger: 'blur' },
+    { type: 'number', min: 0, message: '库存数量不能小于0', trigger: 'blur' },
+  ],
+  thumbnail: [
+    { required: true, message: '请输入缩略图URL', trigger: 'blur' },
+    { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' },
+  ],
+  images: [
+    { required: true, message: '请至少添加一张商品图片', trigger: 'blur' },
+  ],
+}
+
+// 获取商品详情（编辑模式）
+async function fetchGoodsDetail() {
+  if (!isEditMode.value)
+    return
+
+  try {
+    pageLoading.value = true
+    const response = await getGoodsDetail(goodsId.value)
+
+    if (response.code === 200 && response.data) {
+      const goods = response.data
+      Object.assign(formData, {
+        name: goods.name,
+        description: goods.description,
+        price: goods.price,
+        originalPrice: goods.originalPrice,
+        images: goods.images && goods.images.length > 0 ? goods.images : [''],
+        thumbnail: goods.thumbnail,
+        stock: goods.stock,
+        status: goods.status,
+        menuId: goods.menuId,
+        isRecommend: goods.isRecommend,
+        noSingleDelivery: goods.noSingleDelivery || false,
+        specifications: goods.specifications || [],
+      })
+    }
+    else {
+      message.error(response.msg || '获取商品详情失败')
+      router.push('/goods/list')
+    }
+  }
+  catch (error) {
+    console.error('获取商品详情失败:', error)
+    message.error('获取商品详情失败，请稍后重试')
+    router.push('/goods/list')
+  }
+  finally {
+    pageLoading.value = false
+  }
+}
+
+// 获取商品分类列表
+async function fetchMenuList() {
+  try {
+    menuLoading.value = true
+    const response = await getGoodsMenuList()
+
+    if (response.code === 200) {
+      menuList.value = response.data || []
+    }
+    else {
+      message.error(response.msg || '获取商品分类失败')
+    }
+  }
+  catch (error) {
+    console.error('获取商品分类失败:', error)
+    message.error('获取商品分类失败，请稍后重试')
+  }
+  finally {
+    menuLoading.value = false
+  }
+}
+
+// 添加图片输入框
+function addImage() {
+  formData.images.push('')
+}
+
+// 删除图片输入框
+function removeImage(index: number) {
+  if (formData.images.length > 1) {
+    formData.images.splice(index, 1)
+  }
+  else {
+    message.warning('至少保留一张图片')
+  }
+}
+
+// 添加规格
+function addSpecification() {
+  formData.specifications!.push({
+    name: '',
+    values: [''],
+  })
+}
+
+// 删除规格
+function removeSpecification(specIndex: number) {
+  if (formData.specifications && formData.specifications.length > 0) {
+    formData.specifications.splice(specIndex, 1)
+  }
+}
+
+// 添加规格值
+function addSpecValue(specIndex: number) {
+  if (formData.specifications && formData.specifications[specIndex]) {
+    formData.specifications[specIndex].values.push('')
+  }
+}
+
+// 删除规格值
+function removeSpecValue(specIndex: number, valueIndex: number) {
+  if (formData.specifications && formData.specifications[specIndex]) {
+    const spec = formData.specifications[specIndex]
+    if (spec.values.length > 1) {
+      spec.values.splice(valueIndex, 1)
+    }
+    else {
+      message.warning('每个规格至少保留一个值')
+    }
+  }
+}
+
+// 提交表单
+async function handleSubmit() {
+  try {
+    await formRef.value?.validate()
+
+    // 过滤空的图片URL
+    const filteredImages = formData.images.filter(img => img.trim())
+    if (filteredImages.length === 0) {
+      message.error('请至少添加一张有效的商品图片')
+      return
+    }
+
+    // 处理规格数据，过滤空值
+    const filteredSpecifications = formData.specifications
+      ?.map(spec => ({
+        name: spec.name.trim(),
+        values: spec.values.filter(value => value.trim()).map(value => value.trim()),
+      }))
+      .filter(spec => spec.name && spec.values.length > 0) || []
+
+    submitLoading.value = true
+
+    const submitData = {
+      ...formData,
+      images: filteredImages,
+      specifications: filteredSpecifications.length > 0 ? filteredSpecifications : undefined,
+    }
+
+    let response
+    if (isEditMode.value) {
+      response = await updateGoods(goodsId.value, submitData as UpdateGoodsParams)
+    }
+    else {
+      response = await createGoods(submitData as CreateGoodsParams)
+    }
+
+    if (response.code === 200) {
+      message.success(isEditMode.value ? '商品更新成功' : '商品创建成功')
+      router.push('/goods/list')
+    }
+    else {
+      message.error(response.msg || (isEditMode.value ? '更新商品失败' : '创建商品失败'))
+    }
+  }
+  catch (error) {
+    console.error('操作失败:', error)
+    message.error(isEditMode.value ? '更新商品失败，请稍后重试' : '创建商品失败，请稍后重试')
+  }
+  finally {
+    submitLoading.value = false
+  }
+}
+
+// 重置表单
+function resetForm() {
+  if (isEditMode.value) {
+    // 编辑模式下重置为原始数据
+    fetchGoodsDetail()
+  }
+  else {
+    // 新增模式下重置为空
+    formRef.value?.resetFields()
+    Object.assign(formData, {
+      name: '',
+      description: '',
+      price: 0,
+      originalPrice: 0,
+      images: [''],
+      thumbnail: '',
+      stock: 0,
+      status: 1,
+      menuId: undefined,
+      isRecommend: false,
+      noSingleDelivery: false,
+      specifications: [],
+    })
+  }
+}
+
+// 返回列表
+function goBack() {
+  router.push('/goods/list')
+}
+
+// 组件挂载时初始化数据
+onMounted(async () => {
+  await fetchMenuList()
+  if (isEditMode.value) {
+    await fetchGoodsDetail()
+  }
+})
+</script>
+
 <template>
   <div class="edit-goods-container">
     <PageContainer :title="isEditMode ? '编辑商品' : '新增商品'">
@@ -85,8 +373,12 @@
 
             <a-form-item label="商品状态" name="status">
               <a-radio-group v-model:value="formData.status">
-                <a-radio :value="1">上架</a-radio>
-                <a-radio :value="0">下架</a-radio>
+                <a-radio :value="1">
+                  上架
+                </a-radio>
+                <a-radio :value="0">
+                  下架
+                </a-radio>
               </a-radio-group>
             </a-form-item>
 
@@ -108,7 +400,7 @@
                   class="mb-2"
                 />
                 <div v-if="formData.thumbnail" class="image-preview">
-                  <img :src="formData.thumbnail" alt="缩略图预览" class="preview-image" />
+                  <img :src="formData.thumbnail" alt="缩略图预览" class="preview-image">
                 </div>
               </div>
             </a-form-item>
@@ -132,10 +424,10 @@
                     删除
                   </a-button>
                   <div v-if="image" class="image-preview">
-                    <img :src="image" :alt="`商品图片${index + 1}`" class="preview-image" />
+                    <img :src="image" :alt="`商品图片${index + 1}`" class="preview-image">
                   </div>
                 </div>
-                <a-button type="dashed" @click="addImage" class="add-image-btn">
+                <a-button type="dashed" class="add-image-btn" @click="addImage">
                   + 添加图片
                 </a-button>
               </div>
@@ -182,14 +474,14 @@
                     <a-button
                       type="dashed"
                       size="small"
-                      @click="addSpecValue(specIndex)"
                       class="add-spec-value-btn"
+                      @click="addSpecValue(specIndex)"
                     >
                       + 添加规格值
                     </a-button>
                   </div>
                 </div>
-                <a-button type="dashed" @click="addSpecification" class="add-specification-btn">
+                <a-button type="dashed" class="add-specification-btn" @click="addSpecification">
                   + 添加规格
                 </a-button>
                 <div class="spec-tip">
@@ -217,280 +509,6 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { message } from 'ant-design-vue'
-import type { FormInstance } from 'ant-design-vue'
-import { 
-  createGoods, 
-  updateGoods,
-  getGoodsDetail,
-  getGoodsMenuList, 
-  type CreateGoodsParams, 
-  type UpdateGoodsParams,
-  type GoodsMenu 
-} from '~/api/goods'
-
-const router = useRouter()
-const route = useRoute()
-const formRef = ref<FormInstance>()
-const submitLoading = ref(false)
-const menuLoading = ref(false)
-const pageLoading = ref(false)
-const menuList = ref<GoodsMenu[]>([])
-
-// 判断是否为编辑模式
-const isEditMode = computed(() => {
-  return route.path.includes('/edit/') && route.params.id
-})
-
-// 获取商品ID
-const goodsId = computed(() => {
-  return route.params.id as string
-})
-
-// 表单数据
-const formData = reactive<CreateGoodsParams & UpdateGoodsParams>({
-  name: '',
-  description: '',
-  price: 0,
-  originalPrice: 0,
-  images: [''],
-  thumbnail: '',
-  stock: 0,
-  status: 1,
-  menuId: undefined,
-  isRecommend: false,
-  noSingleDelivery: false,
-  specifications: []
-})
-
-// 表单验证规则
-const rules = {
-  name: [
-    { required: true, message: '请输入商品名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '商品名称长度在1到100个字符', trigger: 'blur' }
-  ],
-  description: [
-    { required: true, message: '请输入商品描述', trigger: 'blur' },
-    { min: 1, max: 500, message: '商品描述长度在1到500个字符', trigger: 'blur' }
-  ],
-  menuId: [
-    { required: true, message: '请选择商品分类', trigger: 'change' }
-  ],
-  price: [
-    { required: true, message: '请输入商品价格', trigger: 'blur' },
-    { type: 'number', min: 0, message: '商品价格不能小于0', trigger: 'blur' }
-  ],
-  originalPrice: [
-    { type: 'number', min: 0, message: '原价不能小于0', trigger: 'blur' }
-  ],
-  stock: [
-    { required: true, message: '请输入库存数量', trigger: 'blur' },
-    { type: 'number', min: 0, message: '库存数量不能小于0', trigger: 'blur' }
-  ],
-  thumbnail: [
-    { required: true, message: '请输入缩略图URL', trigger: 'blur' },
-    { type: 'url', message: '请输入正确的URL格式', trigger: 'blur' }
-  ],
-  images: [
-    { required: true, message: '请至少添加一张商品图片', trigger: 'blur' }
-  ]
-}
-
-// 获取商品详情（编辑模式）
-const fetchGoodsDetail = async () => {
-  if (!isEditMode.value) return
-  
-  try {
-    pageLoading.value = true
-    const response = await getGoodsDetail(goodsId.value)
-    
-    if (response.code === 200 && response.data) {
-      const goods = response.data
-      Object.assign(formData, {
-        name: goods.name,
-        description: goods.description,
-        price: goods.price,
-        originalPrice: goods.originalPrice,
-        images: goods.images && goods.images.length > 0 ? goods.images : [''],
-        thumbnail: goods.thumbnail,
-        stock: goods.stock,
-        status: goods.status,
-        menuId: goods.menuId,
-        isRecommend: goods.isRecommend,
-        noSingleDelivery: goods.noSingleDelivery || false,
-        specifications: goods.specifications || []
-      })
-    } else {
-      message.error(response.msg || '获取商品详情失败')
-      router.push('/goods/list')
-    }
-  } catch (error) {
-    console.error('获取商品详情失败:', error)
-    message.error('获取商品详情失败，请稍后重试')
-    router.push('/goods/list')
-  } finally {
-    pageLoading.value = false
-  }
-}
-
-// 获取商品分类列表
-const fetchMenuList = async () => {
-  try {
-    menuLoading.value = true
-    const response = await getGoodsMenuList()
-    
-    if (response.code === 200) {
-      menuList.value = response.data || []
-    } else {
-      message.error(response.msg || '获取商品分类失败')
-    }
-  } catch (error) {
-    console.error('获取商品分类失败:', error)
-    message.error('获取商品分类失败，请稍后重试')
-  } finally {
-    menuLoading.value = false
-  }
-}
-
-// 添加图片输入框
-const addImage = () => {
-  formData.images.push('')
-}
-
-// 删除图片输入框
-const removeImage = (index: number) => {
-  if (formData.images.length > 1) {
-    formData.images.splice(index, 1)
-  } else {
-    message.warning('至少保留一张图片')
-  }
-}
-
-// 添加规格
-const addSpecification = () => {
-  formData.specifications!.push({
-    name: '',
-    values: ['']
-  })
-}
-
-// 删除规格
-const removeSpecification = (specIndex: number) => {
-  if (formData.specifications && formData.specifications.length > 0) {
-    formData.specifications.splice(specIndex, 1)
-  }
-}
-
-// 添加规格值
-const addSpecValue = (specIndex: number) => {
-  if (formData.specifications && formData.specifications[specIndex]) {
-    formData.specifications[specIndex].values.push('')
-  }
-}
-
-// 删除规格值
-const removeSpecValue = (specIndex: number, valueIndex: number) => {
-  if (formData.specifications && formData.specifications[specIndex]) {
-    const spec = formData.specifications[specIndex]
-    if (spec.values.length > 1) {
-      spec.values.splice(valueIndex, 1)
-    } else {
-      message.warning('每个规格至少保留一个值')
-    }
-  }
-}
-
-// 提交表单
-const handleSubmit = async () => {
-  try {
-    await formRef.value?.validate()
-    
-    // 过滤空的图片URL
-    const filteredImages = formData.images.filter(img => img.trim())
-    if (filteredImages.length === 0) {
-      message.error('请至少添加一张有效的商品图片')
-      return
-    }
-
-    // 处理规格数据，过滤空值
-    const filteredSpecifications = formData.specifications
-      ?.map(spec => ({
-        name: spec.name.trim(),
-        values: spec.values.filter(value => value.trim()).map(value => value.trim())
-      }))
-      .filter(spec => spec.name && spec.values.length > 0) || []
-
-    submitLoading.value = true
-    
-    const submitData = {
-      ...formData,
-      images: filteredImages,
-      specifications: filteredSpecifications.length > 0 ? filteredSpecifications : undefined
-    }
-    
-    let response
-    if (isEditMode.value) {
-      response = await updateGoods(goodsId.value, submitData as UpdateGoodsParams)
-    } else {
-      response = await createGoods(submitData as CreateGoodsParams)
-    }
-    
-    if (response.code === 200) {
-      message.success(isEditMode.value ? '商品更新成功' : '商品创建成功')
-      router.push('/goods/list')
-    } else {
-      message.error(response.msg || (isEditMode.value ? '更新商品失败' : '创建商品失败'))
-    }
-  } catch (error) {
-    console.error('操作失败:', error)
-    message.error(isEditMode.value ? '更新商品失败，请稍后重试' : '创建商品失败，请稍后重试')
-  } finally {
-    submitLoading.value = false
-  }
-}
-
-// 重置表单
-const resetForm = () => {
-  if (isEditMode.value) {
-    // 编辑模式下重置为原始数据
-    fetchGoodsDetail()
-  } else {
-    // 新增模式下重置为空
-    formRef.value?.resetFields()
-    Object.assign(formData, {
-      name: '',
-      description: '',
-      price: 0,
-      originalPrice: 0,
-      images: [''],
-      thumbnail: '',
-      stock: 0,
-      status: 1,
-      menuId: undefined,
-      isRecommend: false,
-      noSingleDelivery: false,
-      specifications: []
-    })
-  }
-}
-
-// 返回列表
-const goBack = () => {
-  router.push('/goods/list')
-}
-
-// 组件挂载时初始化数据
-onMounted(async () => {
-  await fetchMenuList()
-  if (isEditMode.value) {
-    await fetchGoodsDetail()
-  }
-})
-</script>
-
 <style lang="less" scoped>
 .edit-goods-container {
   .form-container {
@@ -503,7 +521,7 @@ onMounted(async () => {
   .image-upload-section {
     .image-preview {
       margin-top: 8px;
-      
+
       .preview-image {
         width: 100px;
         height: 100px;
@@ -520,14 +538,14 @@ onMounted(async () => {
       align-items: flex-start;
       gap: 8px;
       margin-bottom: 16px;
-      
+
       .ant-input {
         flex: 1;
       }
-      
+
       .image-preview {
         margin-top: 8px;
-        
+
         .preview-image {
           width: 80px;
           height: 80px;
@@ -537,14 +555,14 @@ onMounted(async () => {
         }
       }
     }
-    
+
     .add-image-btn {
       width: 100%;
       height: 60px;
       border: 2px dashed #d9d9d9;
       background: #fafafa;
       color: #999;
-      
+
       &:hover {
         border-color: #1890ff;
         color: #1890ff;
@@ -564,7 +582,7 @@ onMounted(async () => {
         display: flex;
         align-items: center;
         margin-bottom: 12px;
-        
+
         .ant-input {
           font-weight: 500;
         }
@@ -582,7 +600,7 @@ onMounted(async () => {
           background: #fff;
           color: #666;
           height: 32px;
-          
+
           &:hover {
             border-color: #1890ff;
             color: #1890ff;
@@ -598,7 +616,7 @@ onMounted(async () => {
       background: #fafafa;
       color: #999;
       margin-bottom: 12px;
-      
+
       &:hover {
         border-color: #1890ff;
         color: #1890ff;

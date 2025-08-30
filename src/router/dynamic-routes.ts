@@ -46,7 +46,7 @@ export default [
           title: '商品分类',
         },
       },
-     
+
     ],
   },
 ] as RouteRecordRaw[]

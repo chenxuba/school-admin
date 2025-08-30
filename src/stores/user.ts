@@ -1,4 +1,3 @@
-import { logoutApi } from '~@/api/common/login'
 import { getRouteMenusApi } from '~@/api/common/menu'
 import type { UserInfo } from '~@/api/common/user'
 import { getUserInfoApi } from '~@/api/common/user'

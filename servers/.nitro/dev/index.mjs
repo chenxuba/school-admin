@@ -1,32 +1,32 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import destr from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/destr@2.0.5/node_modules/destr/dist/index.mjs';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestURL, getRequestHeader, getResponseHeader, getRequestHeaders, setResponseHeaders, setResponseStatus, send, appendResponseHeader, removeResponseHeader, createError, setResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, readBody, getQuery as getQuery$1 } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/h3@1.15.4/node_modules/h3/dist/index.mjs';
-import { createHooks } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/hookable@5.5.3/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/ofetch@1.4.1/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/node-mock-http@1.0.2/node_modules/node-mock-http/dist/index.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, decodePath, withLeadingSlash, withoutTrailingSlash } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/ufo@1.6.1/node_modules/ufo/dist/index.mjs';
-import { createStorage, prefixStorage } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/unstorage@1.16.1_db0@0.3.2+ioredis@5.7.0/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/unstorage@1.16.1_db0@0.3.2+ioredis@5.7.0/node_modules/unstorage/drivers/fs.mjs';
-import { digest } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/ohash@2.0.11/node_modules/ohash/dist/index.mjs';
-import { klona } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/klona@2.0.6/node_modules/klona/dist/index.mjs';
-import defu, { defuFn } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/defu@6.1.4/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/scule@1.3.0/node_modules/scule/dist/index.mjs';
-import { getContext } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/unctx@2.4.1/node_modules/unctx/dist/index.mjs';
-import { toRouteMatcher, createRouter } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/radix3@1.1.2/node_modules/radix3/dist/index.mjs';
+import destr from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/destr@2.0.5/node_modules/destr/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestURL, getRequestHeader, getResponseHeader, getRequestHeaders, setResponseHeaders, setResponseStatus, send, appendResponseHeader, removeResponseHeader, createError, setResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getRouterParam, readBody, getQuery as getQuery$1 } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/h3@1.15.4/node_modules/h3/dist/index.mjs';
+import { createHooks } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/hookable@5.5.3/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/ofetch@1.4.1/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/node-mock-http@1.0.2/node_modules/node-mock-http/dist/index.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, decodePath, withLeadingSlash, withoutTrailingSlash } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/ufo@1.6.1/node_modules/ufo/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/unstorage@1.16.1_db0@0.3.2+ioredis@5.7.0/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/unstorage@1.16.1_db0@0.3.2+ioredis@5.7.0/node_modules/unstorage/drivers/fs.mjs';
+import { digest } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/ohash@2.0.11/node_modules/ohash/dist/index.mjs';
+import { klona } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/klona@2.0.6/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/defu@6.1.4/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/scule@1.3.0/node_modules/scule/dist/index.mjs';
+import { getContext } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/unctx@2.4.1/node_modules/unctx/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/radix3@1.1.2/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
-import consola from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/consola@3.4.2/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/youch-core@0.3.3/node_modules/youch-core/build/index.js';
-import { Youch } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/youch@4.1.0-beta.8/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/source-map@0.7.6/node_modules/source-map/source-map.js';
+import consola from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/consola@3.4.2/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/youch-core@0.3.3/node_modules/youch-core/build/index.js';
+import { Youch } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/youch@4.1.0-beta.8/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/source-map@0.7.6/node_modules/source-map/source-map.js';
 import { promises } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Users/chenrui/Desktop/%E6%88%91%E7%9A%84%E5%8A%9E%E5%85%AC/%E9%A1%B9%E7%9B%AEA/school-admin/node_modules/.pnpm/pathe@2.0.3/node_modules/pathe/dist/index.mjs';
+import { dirname as dirname$1, resolve as resolve$1 } from 'file:///Users/chenrui/Desktop/%E6%A0%A1%E5%9B%AD%E5%A4%96%E5%8D%96/school-shop-admin/node_modules/.pnpm/pathe@2.0.3/node_modules/pathe/dist/index.mjs';
 import { Server } from 'node:http';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 
-const serverAssets = [{"baseName":"server","dir":"/Users/chenrui/Desktop/我的办公/项目A/school-admin/servers/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/Users/chenrui/Desktop/校园外卖/school-shop-admin/servers/assets"}];
 
 const assets$1 = createStorage();
 
@@ -38,11 +38,11 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets$1);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/chenrui/Desktop/我的办公/项目A/school-admin"}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/chenrui/Desktop/我的办公/项目A/school-admin/servers"}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/chenrui/Desktop/我的办公/项目A/school-admin/servers/.nitro"}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/chenrui/Desktop/我的办公/项目A/school-admin/servers/.nitro/cache"}));
-storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/Users/chenrui/Desktop/我的办公/项目A/school-admin/.data/kv"}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/chenrui/Desktop/校园外卖/school-shop-admin"}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/Users/chenrui/Desktop/校园外卖/school-shop-admin/servers"}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/chenrui/Desktop/校园外卖/school-shop-admin/servers/.nitro"}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/Users/chenrui/Desktop/校园外卖/school-shop-admin/servers/.nitro/cache"}));
+storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/Users/chenrui/Desktop/校园外卖/school-shop-admin/.data/kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -909,15 +909,15 @@ const plugins = [
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"a827-c6/9PpmloN4IdSa7ajDH0na8lYc\"",
-    "mtime": "2025-08-15T14:02:03.299Z",
-    "size": 43047,
+    "etag": "\"a6f8-8sB43lGM4h234djGdvJhj+TSALA\"",
+    "mtime": "2025-08-29T07:49:16.154Z",
+    "size": 42744,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
     "etag": "\"25553-RMNOZpmWt0uf80w+p6tpravW1Mc\"",
-    "mtime": "2025-08-15T14:02:03.299Z",
+    "mtime": "2025-08-29T07:49:16.154Z",
     "size": 152915,
     "path": "index.mjs.map"
   }
@@ -946,7 +946,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _e7ftgP = eventHandler((event) => {
+const _tf1N2f = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -1011,7 +1011,7 @@ const _e7ftgP = eventHandler((event) => {
 });
 
 const handlers = [
-  { route: '', handler: _e7ftgP, lazy: false, middleware: true, method: undefined }
+  { route: '', handler: _tf1N2f, lazy: false, middleware: true, method: undefined }
 ];
 
 function createNitroApp() {
