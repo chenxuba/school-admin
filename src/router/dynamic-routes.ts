@@ -49,4 +49,32 @@ export default [
 
     ],
   },
+  {
+    path: '/order',
+    redirect: '/order/list',
+    name: 'Order',
+    meta: {
+      title: '订单管理',
+      icon: 'ShoppingCartOutlined',
+    },
+    component: basicRouteMap.RouteView,
+    children: [
+      {
+        path: '/order/list',
+        name: 'OrderList',
+        component: () => import('~/pages/order/list.vue'),
+        meta: {
+          title: '订单列表',
+        },
+      },
+      {
+        path: '/order/statistics',
+        name: 'OrderStatistics',
+        component: () => import('~/pages/order/statistics.vue'),
+        meta: {
+          title: '订单统计',
+        },
+      },
+    ],
+  },
 ] as RouteRecordRaw[]
