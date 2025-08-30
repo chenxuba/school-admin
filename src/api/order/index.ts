@@ -96,6 +96,7 @@ export interface OrderStatistics {
     totalOrders: number
     totalAmount: number
     avgOrderAmount: number
+    paidOrders: number
     completedOrders: number
   }
   statusStats: {

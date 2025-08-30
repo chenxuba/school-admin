@@ -121,8 +121,8 @@ function getStatusColor(status: string) {
 
 function getStatusText(status: string) {
   const textMap: Record<string, string> = {
-    pending: '待确认',
-    confirmed: '已确认',
+    pending: '待支付',
+    confirmed: '待确认',
     preparing: '制作中',
     delivering: '配送中',
     completed: '已完成',

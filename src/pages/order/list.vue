@@ -312,8 +312,8 @@ function getStatusColor(status: string) {
 
 function getStatusText(status: string) {
   const textMap: Record<string, string> = {
-    pending: '待确认',
-    confirmed: '已确认',
+    pending: '待支付',
+    confirmed: '待确认',
     preparing: '制作中',
     delivering: '配送中',
     completed: '已完成',
@@ -350,10 +350,10 @@ onMounted(() => {
               allow-clear
             >
               <a-select-option value="pending">
-                待确认
+                待支付
               </a-select-option>
               <a-select-option value="confirmed">
-                已确认
+                待确认
               </a-select-option>
               <a-select-option value="preparing">
                 制作中
@@ -490,9 +490,6 @@ onMounted(() => {
               <a-dropdown v-if="canUpdateStatus(record.status)">
                 <template #overlay>
                   <a-menu @click="({ key }) => handleStatusChange(record, key)">
-                    <a-menu-item v-if="record.status === 'pending' && record.paymentStatus === 'paid'" key="confirmed">
-                      确认订单
-                    </a-menu-item>
                     <a-menu-item v-if="record.status === 'confirmed'" key="preparing">
                       开始制作
                     </a-menu-item>
@@ -538,7 +535,7 @@ onMounted(() => {
     >
       <a-form-item label="取消原因" required>
         <a-textarea
-          v-model="cancelReason"
+          v-model:value="cancelReason"
           placeholder="请输入取消原因"
           :rows="4"
         />

@@ -67,14 +67,7 @@ export default [
           title: '订单列表',
         },
       },
-      {
-        path: '/order/statistics',
-        name: 'OrderStatistics',
-        component: () => import('~/pages/order/statistics.vue'),
-        meta: {
-          title: '订单统计',
-        },
-      },
+
     ],
   },
 ] as RouteRecordRaw[]
